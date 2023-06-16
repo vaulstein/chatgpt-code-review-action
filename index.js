@@ -62,7 +62,7 @@ async function run() {
             code = getPrCode(issue.pull_request.diff_url);
         }
     };
-    const code = response.data;
+    code = response.data;
     core.debug(`diff code: ${code}`);
     const files = parsePullRequestDiff(code);
     core.debug(`diff files: ${files}`);
