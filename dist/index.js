@@ -39238,7 +39238,6 @@ async function run() {
     // Get the code to analyze from the review comment
     var content = comment && comment.body || "";
 
-<<<<<<< HEAD
     var code;
 
     core.debug(`openaiToken length: ${openaiToken.length}`);
@@ -39247,16 +39246,8 @@ async function run() {
         // Get the content of the pull request
         if (!code) {
             code = getPrCode(issue.pull_request.diff_url);
-=======
-    const url = `${githubBaseURL}/repos/${repoOwner}/${repoName}/pulls/${prNumber}`;
-    core.debug(`diff url: ${url}`);
-    var response = await axios.get(url, {
-        headers: {
-            Authorization: `Bearer ${githubToken}`,
-            Accept: 'application/vnd.github.diff'
->>>>>>> main
         }
-    });
+    };
     const code = response.data;
     core.debug(`diff code: ${code}`);
     const files = parsePullRequestDiff(code);
