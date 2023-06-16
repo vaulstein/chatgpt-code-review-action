@@ -15,6 +15,11 @@ function configWithProxy(config) {
     return c;
 }
 
+async function getPrCode(url) {
+    const response = await axios.get(url);
+    return response.data;
+}
+
 async function run() {
   try {
     // Get input values
@@ -47,15 +52,17 @@ async function run() {
     // Get the code to analyze from the review comment
     var content = comment && comment.body || "";
 
-    const url = `${githubBaseURL}/repos/${repoOwner}/${repoName}/pulls/${prNumber}`;
-    core.debug(`diff url: ${url}`);
-    var response = await axios.get(url, {
-        headers: {
-            Authorization: `Bearer ${githubToken}`,
-            Accept: 'application/vnd.github.diff'
+    var code;
+
+    core.debug(`openaiToken length: ${openaiToken.length}`);
+
+    if (content == fullReviewComment) {
+        // Get the content of the pull request
+        if (!code) {
+            code = getPrCode(issue.pull_request.diff_url);
         }
-    });
-    const code = response.data;
+    };
+    code = response.data;
     core.debug(`diff code: ${code}`);
     const files = parsePullRequestDiff(code);
     core.debug(`diff files: ${files}`);
@@ -82,6 +89,10 @@ async function run() {
 
     // Determine the programming language if it was not provided
     if (programmingLanguage == 'auto') {
+        // Get the content of the pull request
+        if (!code) {
+            code = getPrCode(issue.pull_request.diff_url);
+        }
         const detectedLanguage = detect(code);
         core.debug(`Detected programming language: ${detectedLanguage}`);
         programmingLanguage = detectedLanguage;
